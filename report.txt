@@ -1,0 +1,363 @@
+How I tested my classes:
+PersonProfile class:
+I made a couple PersonProfile Objects to make sure that GetName() and GetEmail() are retrieving the correct values. 
+    PersonProfile pp("FML", "FML@gmail.com");
+    PersonProfile pp("Abdullah Fowler", "AbFow2483@charter.net");
+    PersonProfile pp("Mordechai Hayes", "MHa7@sky.com");
+    PersonProfile pp("Titan Adkins", "TiAdkins81471@charter.net");
+
+I tested AddAttValPair(), GetNumAttValPairs(), and GetAttVal() together.
+Using AddAttValPair(), I made sure to insert duplicate attribute-value pairs, as well as attribute-value pairs with attributes that is the same
+as an existing attribute, but with a different corresponding value. I then used GetNumAttValPairs() to check that the correct number of 
+attribute-value pairs are inserted. I also used GetNumAttValPairs() to created a loop that make sure that all attribute-value pairs from
+the PersonProfile object can be retrieved and are all unique attribute-value pairs. 
+
+    PersonProfile pp("Abdullah Fowler", "AbFow2483@charter.net");
+    std::cout << pp.GetName() << std::endl;
+    std::cout << pp.GetEmail() << std::endl;
+    pp.AddAttValPair(AttValPair("job", "architect"));
+    pp.AddAttValPair(AttValPair("job", "architect"));
+    pp.AddAttValPair(AttValPair("hobby", "canyoneering"));
+    pp.AddAttValPair(AttValPair("hobby", "slacklining"));
+    pp.AddAttValPair(AttValPair("hobby", "painting"));
+    pp.AddAttValPair(AttValPair("hobby", "painting"));
+    pp.AddAttValPair(AttValPair("hobby", "painting"));
+    pp.AddAttValPair(AttValPair("trait", "sly"));
+    pp.AddAttValPair(AttValPair("trait", "incurious"));
+    for (int i = 0; i < pp.GetNumAttValPairs(); i++) {
+        AttValPair avpr;
+        pp.GetAttVal(i, avpr);
+        std::cout << avpr.attribute << "->" << avpr.value << std::endl;
+    }
+
+MamberDatabase class:
+To test the correctness of LoadDatabase() function, I first checked using the GetMemberByEmail() function, which is a very simple
+function that uses existing interface to search for and return a PersonProfile pointer. I tested using a testing.txt file which 
+only has 10 members: 
+
+Abdullah Fowler
+AbFow2483@charter.net
+13
+job,architect
+hobby,canyoneering
+hobby,slacklining
+hobby,painting
+hobby,painting
+trait,sly
+trait,incurious
+trait,excitable
+trait,unself-critical
+trait,vacuous
+trait,discouraging
+trait,disloyal
+trait,aloof
+
+Mordechai Hayes
+MHa7@sky.com
+6
+job,accountant
+hobby,origami
+trait,narrow
+trait,quirky
+trait,pedantic
+trait,uncritical
+
+Titan Adkins
+TiAdkins81471@charter.net
+13
+job,librarian
+hobby,canyoneering
+hobby,martial arts
+hobby,sailing
+hobby,cosplaying
+trait,uncritical
+trait,silly
+trait,arbitrary
+trait,gloomy
+trait,insensitive
+trait,reactive
+trait,prejudiced
+trait,regretful
+
+Emilio Tyson
+EmiliTy3@charter.net
+7
+job,doctor
+hobby,surfing
+hobby,kayaking
+trait,reactive
+trait,discourteous
+trait,regretful
+trait,steely
+
+Leon Wallace
+LWall@sky.com
+6
+job,architect
+hobby,hiking
+hobby,running
+hobby,beatboxing
+trait,tall
+trait,grand
+
+Augustus Barrera
+AugustusBarr87744@charter.net
+5
+job,editor
+hobby,slacklining
+trait,dull
+trait,fawning
+trait,expedient
+
+Harvey Byrd
+HaByr5830@gmail.com
+7
+job,firefighter
+hobby,scrapbooking
+trait,puritanical
+trait,pharissical
+trait,dissolute
+trait,hesitant
+trait,crude
+
+Alfred Patel
+AlfrPate600@comcast.net
+12
+job,nurse
+hobby,scrapbooking
+hobby,mixology
+hobby,juggling
+trait,uncreative
+trait,eloquent
+trait,regimental
+trait,unimpressive
+trait,superstitious
+trait,narcissistic
+trait,argumentative
+trait,delicate
+
+Kobe Bryant
+KBry4643@aim.com
+10
+job,architect
+hobby,mixology
+trait,caring
+trait,unctuous
+trait,elegant
+trait,irritable
+trait,monstrous
+trait,fiery
+trait,vindictive
+trait,sedentary
+
+Cain Hardin
+CHar55@mac.com
+8
+job,psychologist
+hobby,mixology
+hobby,photography
+trait,egocentric
+trait,disorderly
+trait,agonizing
+trait,conceited
+trait,extrovert
+
+I used the FindMatchingMembers() function to fetch the PersonProfile from each members. If LoadDatabase() is implemented correctly,
+10 person profile should all be retrieved in correspondance to their repective email. The person profiles should all hold the correct
+name, email, number of unique attribute-value pairs, and all unique attribute-value pairs with the correct attributes and values. 
+
+Test Code:
+    MemberDatabase mdb;
+    mdb.LoadDatabase(MEMBERS_FILE);
+
+    std::string str[10] = {"AbFow2483@charter.net", 
+        "MHa7@sky.com", 
+        "TiAdkins81471@charter.net",
+        "EmiliTy3@charter.net",
+        "LWall@sky.com",
+        "AugustusBarr87744@charter.net",
+        "HaByr5830@gmail.com",
+        "AlfrPate600@comcast.net",
+        "KBry4643@aim.com",
+        "CHar55@mac.com"
+    };
+    for (int i = 0; i < 10; i++) {
+        const PersonProfile* profile = mdb.GetMemberByEmail(str[i]);
+        std::cerr << profile->GetName() << std::endl;
+        std::cerr << profile->GetEmail() << std::endl;
+        std::cerr << profile->GetNumAttValPairs() << std::endl;
+        for (int j = 0; j < profile->GetNumAttValPairs(); j++) {
+            AttValPair attributes;
+            profile->GetAttVal(j, attributes);
+
+            std::cerr << attributes.attribute << "->" << attributes.value << std::endl;
+        }
+        std::cerr << std::endl;
+    }
+
+These 10 members also checked for cases such as duplicating attribute-value pairs. Another case that I checked for is duplicating email addresses, which should cause 
+the LoadDatabase function to return false. I created another test file with 2 members that has duplicating emails and make sure that LoadDatabase return false:
+
+Mordechai Hayes
+MHa7@sky.com
+8
+job,accountant
+hobby,origami
+trait,narrow
+trait,quirky
+trait,pedantic
+trait,uncritical
+trait,pedantic
+trait,uncritical
+
+Titan Adkins
+MHa7@sky.com
+6
+job,accountant
+hobby,origami
+trait,narrow
+trait,quirky
+trait,pedantic
+trait,uncritical
+
+I then used FindMatchingMembers() to continue testing if LoadDatabase() is implemented correctly where the correct data can be retrieved.
+I tested this function with the following members:
+
+Anthony Chen
+anchen082016@gmail.com
+6
+hobby,tennis
+hobby,tennis
+hobby,tennis
+occupation,student
+occupation,web_developer
+trait,smart
+
+Victor Hernandez
+vicstar6@gmail.com
+4
+hobby,cooking
+occupation,student
+trait,kind
+trait,kind
+
+Lakshmann Saraduram
+lak@gmail.com
+3
+hobby,tennis
+occupation,student
+trait,athletic
+
+Brendan Kealey
+brandan@gmail.com
+5
+hobby,tennis
+hobby,watching sports
+occupation,student
+trait,funny
+trait,funny
+
+I make sure to include duplicate attribute-value pair to check that the each member's email are only inserted one time despite having the same
+attribute-value pair multiple time.
+
+If I search by occupation-student pair, I should have a vector of emails of all 4 members.
+If I search by hobby-tennis pair, I should have a vector of emails of Anthony, Lakshmann, and Brendan.
+If I search by trait-kind, I should have a vector of email of Victor
+If I search by hobby-watching sports, I should have a vector of email of Brendan
+If I search by trait-stupid, I should have a empty vector
+If I search by trait-tennis, I should have a empty vector
+If I search by Trait-stupid, I should have a empty vector
+
+
+
+
+
+
+AttributeTranslator:
+I created some custom txt files to test the Load() function for this class. 
+I made sure to test the following scenarios:
+Improper format.
+Single or Multiple empty lines.
+Duplicate values
+
+I tested Load() with FindCompatibleAttValPairs() to make sure that both functions are 
+functioning properly. I created a sample txt files to store custom comptible pairs to make
+sure that it works in all kinds of situation. I inserted duplicate compatible attributes to 
+make that there are no duplicates. I used the test cases provided in the requirment also
+to validate my functions. 
+
+Anisha (anisha@gmail.com) has the following attribute-value pairs:
+● likes,cookies
+● likes,brownies
+● likes,coding
+● occupation,software engineer
+Tjader (tjader@gmail.com) has the following attribute value pairs:
+● likes,baking
+● hobby,weight training
+● occupation,salesperson
+Hercumur (hercumur@gmail.com) has the following attribute value pairs:
+● likes,baking
+● likes,reviewing code
+● occupation,QA engineer
+I make sure that when I search for the same source attribute-value pair that I always obtain
+the same set of compatible value pairs. I also make sure that the source-target att-val pair
+relationship don't exist in reverse order. 
+
+void listCompatiblePairs(const AttributeTranslator& translator) {
+ AttValPair att("favorite_food", "del taco");
+ std::vector<AttValPair> result =
+ translator.FindCompatibleAttValPairs(att);
+if (!results.empty()) {
+ std::cout << "Compatible attributes and values:" << std::endl;
+ for (const auto& p: results)
+ std::cout << p.attribute << " -> " << p.value << std::endl;
+ }
+}
+then it should print something like the following (the order of the three lines may vary):
+Compatible attributes and values:
+favorite_food -> del taco
+occupation -> del taco employee
+favorite_food -> mexican
+
+
+MatchMaker Class:
+Testing IdentifyRankedMatches():
+Initially I created my own set of comptible source-target attribute pairs and own set of 
+person profiles to test if the corrected matches are being fetched. If a peron matches
+with 2 attributes, than the program must indicate so. I also make sure that the program
+doesn't double dount matches with compatible attribute value pairs. I searched for matches
+with the same person with varying level of threshold (negative numbers, 0, positive numbers)
+to make sure that the program behaves correctly. I make sure that the matching members are
+being printed in correct order. I also used the test program that was provided to double
+check many different members to make sure that the correct results are always being produced.
+
+RadixTree class:
+Testing insert(). 
+To test the insert program, I use Visul studio's debugger which allows me to trace through
+the children of each node and each for the prefix stored in that node. I have to consider
+a lot of special cases such as when the root node has empty prefix, when the remaining input
+string has less letters than the current node's prefix string, when the remaining input has more letters
+than the current node's prefix string, when the entire input string is contained by
+the current node's prefix string. I also need to make sure that correct end marks are indicated
+in the node so that the program knows that a value exists at that node. 
+Here are some tests I used:
+inserting "insert" then "ins"
+inserting "anthony" then "antonio"
+inserting "a" then "b" then "c" then "d" then...
+inserting the same value should replaced the value placed at the target node.
+...
+
+Testing search():
+I tested this function with the insert function. The result of the search function
+should match up with the value inserted and avoid accessing nullpointers or 
+nonexisting values. 
+For the function I just need to make sure that the Radix tree can accept a variety 
+of data valuetype and the correct target valuetype is being retrieved.
+if the folloing pairs are inserted:
+insert("something" "good");
+insert("nothing", "bad");
+insert("coolio"m "beans");
+then if I search them:
+search("something") == "good"
+search("nothing") == "bad"
+search("coolio") == "beans"
